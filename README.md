@@ -14,6 +14,9 @@ It also includes **fallbacks** you can run today if Opal isn’t available in yo
 ---
 
 ## Demo idea
+## Live Demo
+Try it here: [Opal App Link](https://opal.withgoogle.com/?flow=drive:/1Yg3it1e4Os4OF85ja6E_N79N-VPq8f7x&mode=app&shared=true)
+
 **Input:** an article URL or raw text  
 **Output:** a LinkedIn‑style post (≤ 1300 chars) with a punchy hook, 3–5 bullets, and a CTA.
 
