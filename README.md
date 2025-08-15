@@ -53,13 +53,6 @@ python src/draft_linkedin.py --text "Paste any article text here"
 
 ---
 
-## What to put in your LinkedIn post
-- Add a short intro (why you built it) + repo link.
-- Include 1–2 screenshots from Opal or n8n.
-- Ask a question to spark discussion (e.g., *“Would you add auto‑posting or human‑in‑the‑loop edits?”*).
-
----
-
 ## License
 MIT © 2025 — Yassine Ben Acha
 
