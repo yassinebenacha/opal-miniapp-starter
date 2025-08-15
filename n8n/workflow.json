@@ -1,56 +1,371 @@
 {
-  "name": "Text \u2192 LinkedIn Post (draft)",
-  "nodes": [
+  "name": "LinkedIn Post Generator (Gemini)",
+  "flow": [
     {
+      "id": 1,
+      "module": "webhook:webhook",
+      "version": 1,
       "parameters": {
-        "httpMethod": "POST",
-        "path": "draft-linkedin",
-        "responseMode": "lastNode",
-        "options": {}
+        "hook": 123456789,
+        "maxResults": 1
       },
-      "id": "Webhook",
-      "name": "Webhook",
-      "type": "n8n-nodes-base.webhook",
-      "typeVersion": 1,
-      "position": [
-        200,
-        300
-      ]
+      "mapper": {},
+      "metadata": {
+        "designer": {
+          "x": 0,
+          "y": 0
+        },
+        "restore": {},
+        "expect": [
+          {
+            "name": "text",
+            "type": "text",
+            "label": "Input text to convert to LinkedIn post",
+            "required": true
+          },
+          {
+            "name": "tone",
+            "type": "select",
+            "label": "Tone",
+            "options": [
+              {
+                "label": "Professional",
+                "value": "professional"
+              },
+              {
+                "label": "Friendly",
+                "value": "friendly"
+              },
+              {
+                "label": "Bold",
+                "value": "bold"
+              }
+            ],
+            "required": false
+          },
+          {
+            "name": "max_chars",
+            "type": "number",
+            "label": "Maximum characters",
+            "required": false
+          }
+        ]
+      }
     },
     {
-      "parameters": {
-        "operation": "chat",
-        "model": "gpt-4o-mini",
-        "messages": [
+      "id": 2,
+      "module": "util:SetVariable2",
+      "version": 1,
+      "parameters": {},
+      "mapper": {
+        "scope": "roundtrip",
+        "value": "{{if(1.tone; 1.tone; \"professional\")}}",
+        "name": "tone"
+      },
+      "metadata": {
+        "designer": {
+          "x": 300,
+          "y": 0
+        },
+        "restore": {
+          "expect": {
+            "scope": {
+              "label": "One cycle"
+            }
+          }
+        },
+        "expect": [
           {
-            "text": "You are a LinkedIn writing assistant. From the following TEXT, write: a one-line hook, 3-5 bullet points (<=12 words each), end with a CTA question. Tone: professional. Max 1200 chars. Return only the post.\\n\\nTEXT: {{$json[\"text\"]}}",
-            "type": "user"
+            "name": "name",
+            "type": "text",
+            "label": "Variable name",
+            "required": true
+          },
+          {
+            "name": "scope",
+            "type": "select",
+            "label": "Variable lifetime",
+            "required": true,
+            "validate": {
+              "enum": [
+                "roundtrip",
+                "execution"
+              ]
+            }
+          },
+          {
+            "name": "value",
+            "type": "any",
+            "label": "Variable value"
+          }
+        ]
+      }
+    },
+    {
+      "id": 3,
+      "module": "util:SetVariable2",
+      "version": 1,
+      "parameters": {},
+      "mapper": {
+        "scope": "roundtrip",
+        "value": "{{if(1.max_chars; 1.max_chars; 1200)}}",
+        "name": "max_chars"
+      },
+      "metadata": {
+        "designer": {
+          "x": 600,
+          "y": 0
+        },
+        "restore": {
+          "expect": {
+            "scope": {
+              "label": "One cycle"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": 4,
+      "module": "http:ActionSendData",
+      "version": 3,
+      "parameters": {
+        "handleErrors": false,
+        "useNewZLibDeCompress": true
+      },
+      "mapper": {
+        "ca": "",
+        "qs": [
+          {
+            "name": "key",
+            "value": "{{GEMINI_API_KEY}}"
+          }
+        ],
+        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent",
+        "data": "{\n  \"contents\": [{\n    \"parts\": [{\n      \"text\": \"You are a LinkedIn writing assistant. Write a LinkedIn post from the text below. Requirements: Start with a one-line hook. 3-5 short bullets (<=12 words each). End with a question or CTA. Tone: {{get(\"tone\")}}. Max length: {{get(\"max_chars\")}} characters. Return ONLY the post, no preface.\\n\\nTEXT:\\n{{1.text}}\"\n    }]\n  }]\n}",
+        "method": "POST",
+        "headers": [
+          {
+            "name": "Content-Type",
+            "value": "application/json"
           }
         ]
       },
-      "id": "OpenAI",
-      "name": "OpenAI",
-      "type": "n8n-nodes-base.openAi",
-      "typeVersion": 4,
-      "position": [
-        500,
-        300
-      ],
-      "credentials": {}
-    }
-  ],
-  "connections": {
-    "Webhook": {
-      "main": [
-        [
+      "metadata": {
+        "designer": {
+          "x": 900,
+          "y": 0
+        },
+        "restore": {
+          "expect": {
+            "method": {
+              "mode": "chose",
+              "label": "POST"
+            },
+            "headers": {
+              "mode": "chose"
+            },
+            "qs": {
+              "mode": "chose"
+            }
+          }
+        },
+        "expect": [
           {
-            "node": "OpenAI",
-            "type": "main",
-            "index": 0
+            "name": "url",
+            "type": "url",
+            "label": "URL",
+            "required": true
+          },
+          {
+            "name": "method",
+            "type": "select",
+            "label": "Method",
+            "required": true,
+            "validate": {
+              "enum": [
+                "GET",
+                "POST",
+                "PUT",
+                "PATCH",
+                "DELETE",
+                "HEAD",
+                "OPTIONS"
+              ]
+            }
+          },
+          {
+            "name": "headers",
+            "spec": [
+              {
+                "name": "name",
+                "type": "text",
+                "label": "Name",
+                "required": true
+              },
+              {
+                "name": "value",
+                "type": "text",
+                "label": "Value"
+              }
+            ],
+            "type": "array",
+            "label": "Headers"
+          },
+          {
+            "name": "qs",
+            "spec": [
+              {
+                "name": "name",
+                "type": "text",
+                "label": "Name",
+                "required": true
+              },
+              {
+                "name": "value",
+                "type": "text",
+                "label": "Value"
+              }
+            ],
+            "type": "array",
+            "label": "Query String"
+          },
+          {
+            "name": "data",
+            "type": "text",
+            "label": "Request body"
           }
         ]
-      ]
+      }
+    },
+    {
+      "id": 5,
+      "module": "json:ParseJSON",
+      "version": 1,
+      "parameters": {},
+      "mapper": {
+        "json": "{{4.data}}"
+      },
+      "metadata": {
+        "designer": {
+          "x": 1200,
+          "y": 0
+        },
+        "restore": {
+          "expect": {
+            "json": {
+              "mode": "edit"
+            }
+          }
+        },
+        "expect": [
+          {
+            "name": "json",
+            "type": "text",
+            "label": "JSON string",
+            "required": true
+          }
+        ]
+      }
+    },
+    {
+      "id": 6,
+      "module": "util:SetVariable2",
+      "version": 1,
+      "parameters": {},
+      "mapper": {
+        "scope": "roundtrip",
+        "value": "{{if(5.candidates[1].content.parts[1].text; 5.candidates[1].content.parts[1].text; \"No content generated\")}}",
+        "name": "linkedin_post"
+      },
+      "metadata": {
+        "designer": {
+          "x": 1500,
+          "y": 0
+        },
+        "restore": {
+          "expect": {
+            "scope": {
+              "label": "One cycle"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": 7,
+      "module": "webhook:WebhookRespond",
+      "version": 1,
+      "parameters": {},
+      "mapper": {
+        "body": "{{get(\"linkedin_post\")}}",
+        "status": "200",
+        "headers": []
+      },
+      "metadata": {
+        "designer": {
+          "x": 1800,
+          "y": 0
+        },
+        "restore": {
+          "expect": {
+            "headers": {
+              "mode": "chose"
+            }
+          }
+        },
+        "expect": [
+          {
+            "name": "status",
+            "type": "uinteger",
+            "label": "Status",
+            "required": true,
+            "validate": {
+              "min": 100
+            }
+          },
+          {
+            "name": "body",
+            "type": "any",
+            "label": "Body"
+          },
+          {
+            "name": "headers",
+            "spec": [
+              {
+                "name": "key",
+                "type": "text",
+                "label": "Key",
+                "required": true
+              },
+              {
+                "name": "value",
+                "type": "text",
+                "label": "Value",
+                "required": true
+              }
+            ],
+            "type": "array",
+            "label": "Custom headers"
+          }
+        ]
+      }
     }
-  },
-  "pinData": {}
+  ],
+  "metadata": {
+    "version": 1,
+    "scenario": {
+      "roundtrips": 1,
+      "maxErrors": 3,
+      "autoCommit": false,
+      "sequential": false,
+      "confidential": false,
+      "dataloss": false,
+      "dlq": false
+    },
+    "designer": {
+      "orphans": []
+    },
+    "zone": "eu1.make.com"
+  }
 }
