@@ -1,0 +1,56 @@
+{
+  "name": "Text \u2192 LinkedIn Post (draft)",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "draft-linkedin",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "Webhook",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        200,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "chat",
+        "model": "gpt-4o-mini",
+        "messages": [
+          {
+            "text": "You are a LinkedIn writing assistant. From the following TEXT, write: a one-line hook, 3-5 bullet points (<=12 words each), end with a CTA question. Tone: professional. Max 1200 chars. Return only the post.\\n\\nTEXT: {{$json[\"text\"]}}",
+            "type": "user"
+          }
+        ]
+      },
+      "id": "OpenAI",
+      "name": "OpenAI",
+      "type": "n8n-nodes-base.openAi",
+      "typeVersion": 4,
+      "position": [
+        500,
+        300
+      ],
+      "credentials": {}
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "OpenAI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {}
+}
