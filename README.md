@@ -17,6 +17,9 @@ It also includes **fallbacks** you can run today if Opal isn’t available in yo
 ## Live Demo
 Try it here: [Opal App Link](https://opal.withgoogle.com/?flow=drive:/1Yg3it1e4Os4OF85ja6E_N79N-VPq8f7x&mode=app&shared=true)
 
+### Demo Video
+[📺 Watch Demo](Enregistrement%20de%20l'écran%202025-08-15%20194213.mp4)
+
 **Input:** an article URL or raw text  
 **Output:** a LinkedIn‑style post (≤ 1300 chars) with a punchy hook, 3–5 bullets, and a CTA.
 
@@ -59,3 +62,11 @@ python src/draft_linkedin.py --text "Paste any article text here"
 
 ## License
 MIT © 2025 — Yassine Ben Acha
+
+---
+
+## Contact Information
+### YASSINE BEN ACHA
+📞 +212 696 545 641  
+✉️ yassinebenacha1@gmail.com  
+🌐 [Mon portfolio](votre_lien_portfolio_ici)
